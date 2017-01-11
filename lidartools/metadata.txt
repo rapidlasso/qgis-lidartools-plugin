@@ -1,0 +1,19 @@
+[general]
+name=LiDAR Tools
+description=LiDAR tools for Processing
+about=
+category=Plugins
+qgisMinimumVersion=2.0
+version=1.0
+
+author=Victor Olaya
+email=volayaf@gmail.com
+
+icon=icons/desktop.svg
+
+homepage=https://github.com/volaya/qgis-lidartools-plugin
+tracker=https://github.com/volaya/qgis-lidartools-plugin/issues
+repository=https://github.com/volaya/qgis-lidartools-plugin
+
+experimental=False
+deprecated=False
