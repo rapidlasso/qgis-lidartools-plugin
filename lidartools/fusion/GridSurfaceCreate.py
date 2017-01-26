@@ -20,6 +20,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = 'Victor Olaya'
 __date__ = 'August 2012'
@@ -58,37 +61,38 @@ class GridSurfaceCreate(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('Grid Surface Create')
         self.group, self.i18n_group = self.trAlgorithm('Surface')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input LAS layer')))
+            self.INPUT, self.tr('Input LAS layer'),
+            optional=False))
         self.addParameter(ParameterNumber(
-            self.CELLSIZE, self.tr('Cellsize'), 0, None, 10.0))
+            self.CELLSIZE, self.tr('Cell Size'), 0, None, 10.0))
         self.addParameter(ParameterSelection(
             self.XYUNITS, self.tr('XY Units'), self.UNITS))
         self.addParameter(ParameterSelection(
             self.ZUNITS, self.tr('Z Units'), self.UNITS))
         self.addOutput(OutputFile(
             self.OUTPUT_DTM, self.tr('DTM Output Surface'), 'dtm'))
-        spike = ParameterString(
-            self.SPIKE, self.tr('Spike (set blank if not used)'), '', False, True)
+        spike = ParameterNumber(
+            self.SPIKE, self.tr('Filter final surface to remove spikes with slopes greater than # percent'), 0, None, 0.0)
         spike.isAdvanced = True
         self.addParameter(spike)
-        median = ParameterString(
-            self.MEDIAN, self.tr('Median'), '', False, True)
+        median = ParameterNumber(
+            self.MEDIAN, self.tr('Apply median filter to model using # by # neighbor window'), 0, None, 0.0)
         median.isAdvanced = True
         self.addParameter(median)
-        smooth = ParameterString(
-            self.SMOOTH, self.tr('Smooth'), '', False, True)
+        smooth = ParameterNumber(
+            self.SMOOTH, self.tr('Apply mean filter to model using # by # neighbor window'), 0, None, 0.0)
         smooth.isAdvanced = True
         self.addParameter(smooth)
-        slope = ParameterString(
-            self.SLOPE, self.tr('Slope'), '', False, True)
+        slope = ParameterNumber(
+            self.SLOPE, self.tr('Filter areas from the surface with slope greater than # percent'), 0, None, 0.0)
         slope.isAdvanced = True
         self.addParameter(slope)
         minimum = ParameterBoolean(
-            self.MINIMUM, self.tr('Minimum (set blank if not used)'), False)
+            self.MINIMUM, self.tr('Use the lowest point in each cell as the surface elevation'), False)
         minimum.isAdvanced = True
         self.addParameter(minimum)
         class_var = ParameterString(
-            self.CLASS, self.tr('Class(es)'), 2, False, True)
+            self.CLASS, self.tr('Class(es)'), '', False, True)
         class_var.isAdvanced = True
         self.addParameter(class_var)
         advance_modifiers = ParameterString(
@@ -96,32 +100,32 @@ class GridSurfaceCreate(FusionAlgorithm):
         advance_modifiers.isAdvanced = True
         self.addParameter(advance_modifiers)
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'GridSurfaceCreate.exe')]
         commands.append('/verbose')
         spike = self.getParameterValue(self.SPIKE)
-        if unicode(spike).strip():
-            commands.append('/spike:' + unicode(spike))
+        if spike != 0.0:
+            commands.append('/spike:' + str(spike))
         median = self.getParameterValue(self.MEDIAN)
-        if unicode(median).strip():
-            commands.append('/median:' + unicode(median))
+        if median != 0.0:
+            commands.append('/median:' + str(median))
         smooth = self.getParameterValue(self.SMOOTH)
-        if unicode(smooth).strip():
-            commands.append('/smooth:' + unicode(smooth))
+        if smooth != 0.0:
+            commands.append('/smooth:' + str(smooth))
         slope = self.getParameterValue(self.SLOPE)
-        if unicode(slope).strip():
-            commands.append('/slope:' + unicode(slope))
+        if slope != 0.0:
+            commands.append('/slope:' + str(slope))
         minimum = self.getParameterValue(self.MINIMUM)
-        if unicode(minimum).strip():
-            commands.append('/minimum:' + unicode(minimum))
+        if str(minimum).strip():
+            commands.append('/minimum:' + str(minimum))
         class_var = self.getParameterValue(self.CLASS)
-        if unicode(class_var).strip():
-            commands.append('/class:' + unicode(class_var))
-        advance_modifiers = unicode(self.getParameterValue(self.ADVANCED_MODIFIERS)).strip()
+        if str(class_var).strip():
+            commands.append('/class:' + str(class_var))
+        advance_modifiers = str(self.getParameterValue(self.ADVANCED_MODIFIERS)).strip()
         if advance_modifiers:
             commands.append(advance_modifiers)
         commands.append(self.getOutputValue(self.OUTPUT_DTM))
-        commands.append(unicode(self.getParameterValue(self.CELLSIZE)))
+        commands.append(str(self.getParameterValue(self.CELLSIZE)))
         commands.append(self.UNITS[self.getParameterValue(self.XYUNITS)][0])
         commands.append(self.UNITS[self.getParameterValue(self.ZUNITS)][0])
         commands.append('0')
@@ -134,4 +138,4 @@ class GridSurfaceCreate(FusionAlgorithm):
         else:
             FusionUtils.createFileList(files)
             commands.append(FusionUtils.tempFileListFilepath())
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

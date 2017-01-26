@@ -16,6 +16,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = 'Victor Olaya'
 __date__ = 'August 2012'
@@ -48,10 +51,11 @@ class ClipData(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('Clip Data')
         self.group, self.i18n_group = self.trAlgorithm('Points')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input LAS layer')))
-        self.addParameter(ParameterExtent(self.EXTENT, self.tr('Extent')))
+            self.INPUT, self.tr('Input LAS layer'),
+            optional=False))
+        self.addParameter(ParameterExtent(self.EXTENT, self.tr('Extent'), optional=False))
         self.addParameter(ParameterSelection(
-            self.SHAPE, self.tr('Shape'), ['Rectangle', 'Circle']))
+            self.SHAPE, self.tr('Shape of the sample area'), ['Rectangle', 'Circle']))
         self.addOutput(OutputFile(
             self.OUTPUT, self.tr('Output clipped LAS file')))
         dtm = ParameterFile(
@@ -64,14 +68,19 @@ class ClipData(FusionAlgorithm):
         self.addParameter(height)
         self.addAdvancedModifiers()
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'ClipData.exe')]
         commands.append('/verbose')
         self.addAdvancedModifiersToCommand(commands)
-        commands.append('/shape:' + unicode(self.getParameterValue(self.SHAPE)))
+        commands.append('/shape:' + str(self.getParameterValue(self.SHAPE)))
         dtm = self.getParameterValue(self.DTM)
         if dtm:
-            commands.append('/dtm:' + unicode(dtm))
+            gfiles = self.getParameterValue(self.DTM).split(';')
+            if len(gfiles) == 1:
+                commands.append('/ground:' + str(dtm))
+            else:
+                FusionUtils.createGroundList(gfiles)
+                commands.append('/ground:' + str(FusionUtils.tempGroundListFilepath()))
         height = self.getParameterValue(self.HEIGHT)
         if height:
             commands.append('/height')
@@ -83,9 +92,9 @@ class ClipData(FusionAlgorithm):
             commands.append(FusionUtils.tempFileListFilepath())
         outFile = self.getOutputValue(self.OUTPUT)
         commands.append(outFile)
-        extent = unicode(self.getParameterValue(self.EXTENT)).split(',')
+        extent = str(self.getParameterValue(self.EXTENT)).split(',')
         commands.append(extent[0])
         commands.append(extent[2])
         commands.append(extent[1])
         commands.append(extent[3])
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

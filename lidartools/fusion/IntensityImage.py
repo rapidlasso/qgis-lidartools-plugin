@@ -16,6 +16,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = "Niccolo' Marchi"
 __date__ = 'January 2016'
@@ -43,6 +46,7 @@ class IntensityImage(FusionAlgorithm):
     HIST = 'HIST'
     PIXEL = 'PIXEL'
     SWITCH = 'SWITCH'
+    FALIGN = 'FALIGN'
     OUTPUT = 'OUTPUT'
 
     def defineCharacteristics(self):
@@ -50,7 +54,8 @@ class IntensityImage(FusionAlgorithm):
         self.group, self.i18n_group = self.trAlgorithm('Points')
 
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input file')))
+            self.INPUT, self.tr('Input file'),
+            optional=False))
         self.addParameter(ParameterBoolean(
             self.ALLRET, self.tr('Use all returns instead of only first'), False))
         self.addParameter(ParameterBoolean(
@@ -61,10 +66,14 @@ class IntensityImage(FusionAlgorithm):
             self.PIXEL, self.tr('Pixel size'), 0, None, 1.0))
         self.addParameter(ParameterSelection(
             self.SWITCH, self.tr('Output format'), ['Bitmap', 'JPEG']))
+        falign = ParameterBoolean(
+            self.FALIGN, self.tr('Force alignment to match other raster products'), False)
+        falign.isAdvanced = True
+        self.addParameter(falign)
         self.addOutput(OutputFile(self.OUTPUT, 'Output image'))
         self.addAdvancedModifiers()
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'IntensityImage.exe')]
         commands.append('/verbose')
         if self.getParameterValue(self.ALLRET):
@@ -75,6 +84,8 @@ class IntensityImage(FusionAlgorithm):
             commands.append('/hist')
         if self.getParameterValue(self.SWITCH) == 1:
             commands.append('/jpg')
+        if self.getParameterValue(self.FALIGN):
+            commands.append('/rasterorigin')
         commands.append(unicode(self.getParameterValue(self.PIXEL)))
         outFile = self.getOutputValue(self.OUTPUT)
         commands.append(outFile)
@@ -84,4 +95,4 @@ class IntensityImage(FusionAlgorithm):
         else:
             FusionUtils.createFileList(files)
             commands.append(FusionUtils.tempFileListFilepath())
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

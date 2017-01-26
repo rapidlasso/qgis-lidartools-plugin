@@ -16,6 +16,8 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
 
 __author__ = "Niccolo' Marchi"
 __date__ = 'May 2014'
@@ -42,11 +44,12 @@ class DTM2TIF(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('DTM to TIF')
         self.group, self.i18n_group = self.trAlgorithm('Conversion')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr("Input .dtm layer")))
+            self.INPUT, self.tr("Input .dtm layer"),
+            optional=False))
         self.addOutput(OutputRaster(self.OUTPUT, self.tr('Output file name')))
         self.addAdvancedModifiers()
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), "DTM2TIF.exe")]
         commands.append("/verbose")
         self.addAdvancedModifiersToCommand(commands)
@@ -59,4 +62,4 @@ class DTM2TIF(FusionAlgorithm):
         outFile = self.getOutputValue(self.OUTPUT)
         commands.append(outFile)
 
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

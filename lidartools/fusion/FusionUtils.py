@@ -16,6 +16,7 @@
 *                                                                         *
 ***************************************************************************
 """
+from builtins import object
 
 __author__ = 'Victor Olaya'
 __date__ = 'August 2012'
@@ -35,26 +36,30 @@ from processing.tools.system import userFolder
 
 class FusionUtils(object):
 
+    FUSION_FOLDER = 'FUSION_FOLDER'
+
     @staticmethod
     def FusionPath():
-        folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), "bin", "fusion")
+        folder = ProcessingConfig.getSetting(FusionUtils.FUSION_FOLDER)
+        if folder is None:
+            folder = ''
+
         return folder
 
     @staticmethod
     def tempFileListFilepath():
         filename = 'fusion_files_list.txt'
-        filepath = userFolder() + os.sep + filename
+        filepath = os.path.join(userFolder(), filename)
         return filepath
 
     @staticmethod
     def createFileList(files):
-        out = open(FusionUtils.tempFileListFilepath(), 'w')
-        for f in files:
-            out.write(f + '\n')
-        out.close()
+        with open(FusionUtils.tempFileListFilepath(), 'w') as out:
+            for f in files:
+                out.write(f + '\n')
 
     @staticmethod
-    def runFusion(commands, progress):
+    def runFusion(commands, feedback):
         loglines = []
         loglines.append(
             QCoreApplication.translate('FusionUtils',
@@ -63,10 +68,22 @@ class FusionUtils(object):
             commands,
             shell=True,
             stdout=subprocess.PIPE,
-            stdin=open(os.devnull),
+            stdin=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
             universal_newlines=False,
         ).stdout
         for line in iter(proc.readline, ''):
             loglines.append(line)
         ProcessingLog.addToLog(ProcessingLog.LOG_INFO, loglines)
+
+    @staticmethod
+    def tempGroundListFilepath():
+        filename = 'fusion_groundFiles_list.txt'
+        filepath = os.path.join(userFolder(), filename)
+        return filepath
+
+    @staticmethod
+    def createGroundList(gfiles):
+        with open(FusionUtils.tempGroundListFilepath(), 'w') as outg:
+            for f in gfiles:
+                outg.write(f + '\n')

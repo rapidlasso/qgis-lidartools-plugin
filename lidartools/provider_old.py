@@ -140,22 +140,13 @@ from .fusion.FilterData import FilterData
 from .fusion.PolyClipData import PolyClipData
 from .fusion.ImageCreate import ImageCreate
 from .fusion.IntensityImage import IntensityImage
-from .fusion.DensityMetrics import DensityMetrics
-from .fusion.MergeDTM import MergeDTM
-from .fusion.TopoMetrics import TopoMetrics
-from .fusion.TreeSeg import TreeSeg
-from .fusion.SplitDTM import SplitDTM
-from .fusion.MergeRaster import MergeRaster
-from .fusion.SurfaceStats import SurfaceStats
-from .fusion.ReturnDensity import ReturnDensity  # spellok
-from .fusion.GridSurfaceStats import GridSurfaceStats
 from .fusion.FusionUtils import FusionUtils
 
 
 class LidarToolsAlgorithmProvider(AlgorithmProvider):
 
     def __init__(self):
-        super().__init__()
+        AlgorithmProvider.__init__(self)
         self.activate = False
 
     def _loadAlgorithms(self):
@@ -222,8 +213,7 @@ class LidarToolsAlgorithmProvider(AlgorithmProvider):
                 Csv2Grid(), Cover(), FilterData(), GridMetrics(), GroundFilter(),
                 GridSurfaceCreate(), MergeData(), TinSurfaceCreate(), PolyClipData(),
                 DTM2TIF(), DTM2ASCII(), FirstLastReturn(), ASCII2DTM(), ImageCreate(),
-                IntensityImage(), DensityMetrics(), MergeDTM(), TopoMetrics(), TreeSeg(),
-                SplitDTM(), MergeRaster(), SurfaceStats(), ReturnDensity(), GridSurfaceStats()  # spellok
+                IntensityImage()
             ]
             for alg in fusiontools:
                 alg.group, alg.i18n_group = alg.trAlgorithm('Fusion')
@@ -233,17 +223,17 @@ class LidarToolsAlgorithmProvider(AlgorithmProvider):
         AlgorithmProvider.initializeSettings(self)
         if not isWindows():
             ProcessingConfig.addSetting(Setting(
-                self.name(),
+                self.getDescription(),
                 LAStoolsUtils.WINE_FOLDER,
                 self.tr('Wine folder'), '', valuetype=Setting.FOLDER))
 
-    def id(self):
+    def getName(self):
         return 'lidartools'
 
-    def name(self):
+    def getDescription(self):
         return self.tr('Tools for LiDAR data')
 
-    def icon(self):
+    def getIcon(self):
         return QIcon(os.path.dirname(__file__) + '/lidar.png')
 
     def getSupportedOutputTableExtensions(self):

@@ -16,6 +16,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = "Niccolo' Marchi"
 __date__ = 'May 2014'
@@ -48,7 +51,7 @@ class ASCII2DTM(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('ASCII to DTM')
         self.group, self.i18n_group = self.trAlgorithm('Conversion')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input ESRI ASCII layer')))
+            self.INPUT, self.tr('Input ESRI ASCII layer'), optional=False))
         self.addParameter(ParameterSelection(
             self.XYUNITS, self.tr('XY Units'), self.UNITS))
         self.addParameter(ParameterSelection(
@@ -63,7 +66,7 @@ class ASCII2DTM(FusionAlgorithm):
 
         self.addAdvancedModifiers()
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'ASCII2DTM.exe')]
         commands.append('/verbose')
         self.addAdvancedModifiersToCommand(commands)
@@ -71,8 +74,8 @@ class ASCII2DTM(FusionAlgorithm):
         commands.append(outFile)
         commands.append(self.UNITS[self.getParameterValue(self.XYUNITS)][0])
         commands.append(self.UNITS[self.getParameterValue(self.ZUNITS)][0])
-        commands.append(unicode(self.getParameterValue(self.COORDSYS)))
-        commands.append(unicode(self.getParameterValue(self.ZONE)))
+        commands.append(str(self.getParameterValue(self.COORDSYS)))
+        commands.append(str(self.getParameterValue(self.ZONE)))
         commands.append('0')
         commands.append('0')
         files = self.getParameterValue(self.INPUT).split(';')
@@ -81,4 +84,4 @@ class ASCII2DTM(FusionAlgorithm):
         else:
             FusionUtils.createFileList(files)
             commands.append(FusionUtils.tempFileListFilepath())
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

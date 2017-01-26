@@ -20,6 +20,9 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 __author__ = 'Victor Olaya'
 __date__ = 'August 2012'
@@ -29,11 +32,11 @@ __revision__ = '$Format:%H$'
 
 import os
 from processing.core.parameters import ParameterFile
+from processing.core.parameters import ParameterNumber
+from processing.core.parameters import ParameterBoolean
 from processing.core.outputs import OutputFile
 from .FusionUtils import FusionUtils
 from .FusionAlgorithm import FusionAlgorithm
-from processing.core.parameters import ParameterString
-from processing.core.parameters import ParameterBoolean
 
 
 class CloudMetrics(FusionAlgorithm):
@@ -49,10 +52,11 @@ class CloudMetrics(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('Cloud Metrics')
         self.group, self.i18n_group = self.trAlgorithm('Points')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input LAS layer')))
+            self.INPUT, self.tr('Input LAS layer'),
+            optional=False))
         self.addOutput(OutputFile(
             self.OUTPUT, self.tr('Output file with tabular metric information'), 'csv'))
-        above = ParameterString(self.ABOVE, self.tr('Above'), '', False)
+        above = ParameterNumber(self.ABOVE, self.tr('Compute cover statistics above the following heightbreak:'), 0, None, 0.0)
         above.isAdvanced = True
         self.addParameter(above)
         firstImpulse = ParameterBoolean(
@@ -63,16 +67,16 @@ class CloudMetrics(FusionAlgorithm):
             self.FIRSTRETURN, self.tr('First Return'), False)
         firstReturn.isAdvanced = True
         self.addParameter(firstReturn)
-        htmin = ParameterString(self.HTMIN, self.tr('Htmin'), '', False, True)
+        htmin = ParameterNumber(self.HTMIN, self.tr('Use only returns above this minimum height:'), 0, None, 0)
         htmin.isAdvanced = True
         self.addParameter(htmin)
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'CloudMetrics.exe')]
         commands.append('/verbose')
         above = self.getParameterValue(self.ABOVE)
-        if unicode(above).strip() != '':
-            commands.append('/above:' + unicode(above))
+        if above != 0.0:
+            commands.append('/above:' + str(above))
         firstImpulse = self.getParameterValue(self.FIRSTIMPULSE)
         if firstImpulse:
             commands.append('/firstinpulse')
@@ -80,8 +84,8 @@ class CloudMetrics(FusionAlgorithm):
         if firstReturn:
             commands.append('/firstreturn')
         htmin = self.getParameterValue(self.HTMIN)
-        if unicode(htmin).strip() != '':
-            commands.append('/minht:' + unicode(htmin))
+        if htmin != 0.0:
+            commands.append('/minht:' + str(htmin))
         files = self.getParameterValue(self.INPUT).split(';')
         if len(files) == 1:
             commands.append(self.getParameterValue(self.INPUT))
@@ -89,4 +93,4 @@ class CloudMetrics(FusionAlgorithm):
             FusionUtils.createFileList(files)
             commands.append(FusionUtils.tempFileListFilepath())
         commands.append(self.getOutputValue(self.OUTPUT))
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)

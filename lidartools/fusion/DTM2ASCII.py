@@ -16,6 +16,8 @@
 *                                                                         *
 ***************************************************************************
 """
+from future import standard_library
+standard_library.install_aliases()
 
 __author__ = "Niccolo' Marchi"
 __date__ = 'May 2014'
@@ -41,11 +43,12 @@ class DTM2ASCII(FusionAlgorithm):
         self.name, self.i18n_name = self.trAlgorithm('DTM to ASCII')
         self.group, self.i18n_group = self.trAlgorithm('Points')
         self.addParameter(ParameterFile(
-            self.INPUT, self.tr('Input canopy surface (.dtm)')))
+            self.INPUT, self.tr('Input canopy surface (.dtm)'),
+            optional=False))
         self.addParameter(ParameterSelection(
             self.SWITCH, self.tr('Output format'), ['raster (ASCII)', 'csv']))
 
-    def processAlgorithm(self, progress):
+    def processAlgorithm(self, feedback):
         commands = [os.path.join(FusionUtils.FusionPath(), 'DTM2ASCII.exe')]
         commands.append('/verbose')
         if self.getParameterValue(self.SWITCH) == 0:
@@ -58,4 +61,4 @@ class DTM2ASCII(FusionAlgorithm):
         else:
             FusionUtils.createFileList(files)
             commands.append(FusionUtils.tempFileListFilepath())
-        FusionUtils.runFusion(commands, progress)
+        FusionUtils.runFusion(commands, feedback)
