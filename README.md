@@ -1,1 +1,1 @@
-#LiDAR Tools
+With QGIS 3 the internal processing toolboxes that were exposing LAStools and FUSION functionality in QGIS 2 have disappeared. This external processing plugin tries to recreate this functionality and again offer the LAStools and FUSION toolboxes in QGIS 3.
