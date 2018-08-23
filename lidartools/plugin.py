@@ -2,10 +2,13 @@
 
 """
 ***************************************************************************
-    __init__.py
+    plugin.py
     ---------------------
-    Date                 : January 2017
+    This script initializes the plugin providers and registers their GUIs.
+    ---------------------    
+    Date                 : January 2017, August 2018
     Copyright            : (C) 2017 Boundless, http://boundlessgeo.com
+                           (C) 2018 rapidlasso GmbH, http://rapidlasso.com
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -20,7 +23,9 @@ __author__ = 'Victor Olaya'
 __date__ = 'January 2017'
 __copyright__ = '(C) 2017 Boundless, http://boundlessgeo.com'
 
-# This will get replaced with a git SHA1 when you do a git archive
+__author__ = 'Martin Isenburg'
+__date__ = 'August 2018'
+__copyright__ = '(C) 2018 Boundless, http://rapidlasso.com'
 
 import os
 import webbrowser
