@@ -1,19 +1,20 @@
 [general]
 name=LiDAR Tools
-description=LiDAR tools for Processing
-about=
-category=Plugins
-qgisMinimumVersion=2.0
-version=1.0
-
-author=Victor Olaya
-email=volayaf@gmail.com
-
-icon=icons/desktop.svg
-
-homepage=https://github.com/volaya/qgis-lidartools-plugin
-tracker=https://github.com/volaya/qgis-lidartools-plugin/issues
-repository=https://github.com/volaya/qgis-lidartools-plugin
-
-experimental=False
+qgisMinimumVersion=3.0
+description=tools for processing point clouds in LAS, LAZ, and ASCII formats
+experimental=True
 deprecated=False
+category=Plugins
+version=0.2
+author=Victor Olaya, Martin Isenburg
+email=volayaf@gmail.com,martin.isenburg@gmail.com
+icon=icons/desktop.svg
+homepage=https://github.com/rapidlasso/qgis-lidartools-plugin
+tracker=https://github.com/rapidlasso/qgis-lidartools-plugin/issues
+repository=https://github.com/rapidlasso/qgis-lidartools-plugin
+tags=LAS,LAZ,LiDAR,pointcloud,points,coordinates,DEM,DTM,DSM,CHM,contours,LAStools,FUSION
+about=
+    The LiDAR Tools plugin exposes the capabilities of the LAStools and the FUSION point processing software within QGIS 3.
+changelog=
+    0.2 - adapted for QGIS 3.2 during hackfest in Zanzibar by Martin Isenburg
+    0.1 - initial version by Victor Olaya
