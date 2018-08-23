@@ -2,19 +2,14 @@
 
 """
 ***************************************************************************
-    LidarToolsAlgorithmProvider.py
+    provider.py
     ---------------------
-    Date                 : August 2012
-    Copyright            : (C) 2012 by Victor Olaya
-    Email                : volayaf at gmail dot com
+    This script initializes the valid providers, depending on Wine and OS.
     ---------------------
-    Date                 : April, October 2014 and May 2016
-    Copyright            : (C) 2014 - 2016 by Martin Isenburg
-    Email                : martin near rapidlasso point com
-    ---------------------
-    Date                 : June 2014
-    Copyright            : (C) 2014 by Agresta S. Coop
-    Email                : iescamochero at agresta dot org
+    Date                 : January 2017, August 2018
+    Copyright            : (C) 2017 Boundless, http://boundlessgeo.com
+                         : (C) 2014 Agresta S. Coop, http://agresta.org
+                         : (C) 2018 rapidlasso GmbH, http://rapidlasso.com
 ***************************************************************************
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -28,9 +23,13 @@ __author__ = 'Victor Olaya'
 __date__ = 'August 2012'
 __copyright__ = '(C) 2012, Victor Olaya'
 
-# This will get replaced with a git SHA1 when you do a git archive
+__author__ = 'Inigo Escamochero'
+__date__ = 'June 2014'
+__copyright__ = '(C) 2014, Agresta S. Coop, http://agresta.org'
 
-__revision__ = '$Format:%H$'
+__author__ = 'Martin Isenburg'
+__date__ = 'August 2018'
+__copyright__ = '(C) 2018, rapidlasso GmbH, http://rapidlasso.com'
 
 import os
 from qgis.PyQt.QtGui import QIcon
